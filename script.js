@@ -58,9 +58,7 @@ function updateTimerUI() {
     $rings.each(function() {
         $(this).attr('stroke-dashoffset', offset);
         $(this).css({
-            'stroke-dashoffset': offset + "px",
-            'stroke': "#009933",
-            'stroke-width': "5px"
+            'stroke-dashoffset': offset + "px"
         });
     });
 }
@@ -142,6 +140,46 @@ $(document).on('click', '.time-text', function() {
     });
 });
 
+// --- quote ---
+
+// --- 명언 데이터 배열 ---
+const quotes = [
+    { text: "언제나 현재에 집중할 수 있다면 마음의 짐을 덜 수 있다.", author: "파울로 코엘료" },
+    { text: "시작하는 방법은 말하기를 그만두고 행동하는 것이다.", author: "월트 디즈니" },
+    { text: "성공은 최종적인 것이 아니며, 실패는 치명적인 것이 아니다. 중요한 것은 지속하려는 용기다.", author: "윈스턴 처칠" },
+    { text: "여러분의 시간은 한정되어 있습니다. 다른 사람의 삶을 사느라 시간을 낭비하지 마세요.", author: "스티브 잡스" },
+    { text: "미래는 자신의 꿈이 아름답다는 것을 믿는 사람들의 것이다.", author: "엘리너 루즈벨트" },
+    { text: "매일 당신을 두렵게 만드는 일을 하나씩 하세요.", author: "엘리너 루즈벨트" },
+    { text: "실천이 말보다 낫다.", author: "벤자민 프랭클린" },
+    { text: "가장 큰 위험은 아무런 위험도 감수하지 않는 것이다.", author: "마크 저커버그" },
+    { text: "오늘 할 수 있는 일을 내일로 미루지 마라.", author: "벤자민 프랭클린" }
+];
+
+// --- 매일 다른 명언을 불러오는 함수 ---
+function displayDailyQuote() {
+    const $quoteText = $('#daily-quote');
+    const $quoteAuthor = $('#quote-author');
+
+    // 오늘 날짜를 기준으로 인덱스 생성 (날짜가 같으면 같은 숫자가 나옴)
+    const now = new Date();
+    const dateStamp = now.getFullYear() + (now.getMonth() + 1) + now.getDate();
+    
+    // 명언 배열의 길이를 넘지 않도록 나머지 연산(%) 사용
+    const index = dateStamp % quotes.length;
+    const todayQuote = quotes[index];
+
+    // 화면에 적용
+    $quoteText.text(`"${todayQuote.text}"`);
+    $quoteAuthor.text(`- ${todayQuote.author}`);
+}
+
+// --- 실행 ---
+$(document).ready(function() {
+    initHeader(); // 기존 함수
+    displayDailyQuote(); // 명언 추가
+    // ... 나머지 초기화 코드
+});
+
 // --- 4. 리스트 관련 ---
 
 // [공통] 통계 및 디자인 업데이트
@@ -204,20 +242,18 @@ function setupItemEvents($item, $container) {
 
 // [공통] 빈 칸 체크 함수 (규칙 2)
 function canAddNewItem($container) {
-
-    // 1. 현재 리스트 박스의 제목(list-input) 체크
     const $listBox = $container.closest('.list-box');
     const $listInput = $listBox.find('.list-input');
     
-    if ($.trim($listInput.val()) === "") {
+    // Everyday 섹션이 아닐 때만 제목 체크 (Everyday는 제목 입력창이 없으므로)
+    if ($listInput.length > 0 && $.trim($listInput.val()) === "") {
         alert('리스트 제목을 입력하세요');
         $listInput.focus();
-        return false; // 제목 없으면 중단
+        return false;
     }
 
     const $items = $container.find('.todo-item');
     let hasEmpty = false;
-
     $items.each(function() {
         if ($.trim($(this).find('.item-input').val()) === "") {
             hasEmpty = true;
@@ -233,7 +269,7 @@ function canAddNewItem($container) {
 
 // [공통] 새로운 줄 추가
 function addNewItem($container) {
-    if (!canAddNewItem($container)) return; // 빈 칸 있으면 중단
+    if (!canAddNewItem($container)) return; 
 
     const $newItem = $($('#item-template').prop('content')).clone().find('.todo-item');
     setupItemEvents($newItem, $container);
@@ -243,11 +279,18 @@ function addNewItem($container) {
 
 // 메인 리스트 박스 추가 버튼
 $('#add-list-box-btn').on('click', function() {
-    
-    // 자동 저장 (기존에 열린 'done' 상태 박스 닫기)
-    $('.done-btn').each(function() {
-        if ($(this).text().toLowerCase() === 'done') $(this).trigger('click');
+    let canProceed = true;
+    $('#list-container .done-btn').each(function() {
+        if ($(this).text().toLowerCase() === 'done') {
+            $(this).trigger('click'); 
+            if ($(this).text().toLowerCase() === 'done') {
+                canProceed = false; 
+                return false;
+            }
+        }
     });
+
+    if (!canProceed) return;
 
     listboxCount++;
     const listboxId = `listbox-${listboxCount}`;
@@ -257,27 +300,29 @@ $('#add-list-box-btn').on('click', function() {
     const $todoList = $newListBox.find('.todo-list');
     const $doneBtn = $newListBox.find('.done-btn');
 
-    // [규칙 1] 시작하자마자 첫 줄 자동 생성
+    // 첫 줄 자동 생성
     const $firstItem = $($('#item-template').prop('content')).clone().find('.todo-item');
     setupItemEvents($firstItem, $todoList);
     $todoList.append($firstItem);
 
-    $newListBox.find('.add-item-row').on('click', () => addNewItem($todoList));
+    $newListBox.find('.add-item-row').on('click', function() {
+        addNewItem($todoList);
+    });
 
     $doneBtn.on('click', function() {
+        const $currentListBox = $(this).closest('.list-box'); 
+        const $currentTodoList = $currentListBox.find('.todo-list');
+        const $listInput = $currentListBox.find('.list-input');
+        const $items = $currentTodoList.find('.todo-item');
         const isDone = $(this).text().toLowerCase() === 'done';
-        const $items = $todoList.find('.todo-item');
-        const $listInput = $newListBox.find('.list-input');
 
         if (isDone) {
-            // 제목 체크
             if ($.trim($listInput.val()) === "") {
                 alert('리스트 제목을 입력하세요');
                 $listInput.focus();
                 return;
             }
 
-            // [규칙 3] 저장 시 빈 칸 자동 삭제
             let validCount = 0;
             $items.each(function() {
                 const $input = $(this).find('.item-input');
@@ -291,19 +336,23 @@ $('#add-list-box-btn').on('click', function() {
 
             if (validCount === 0) {
                 alert('최소 한 개의 할 일은 입력해야 합니다.');
-                if ($todoList.find('.todo-item').length === 0) addNewItem($todoList);
+                if ($currentTodoList.find('.todo-item').length === 0) {
+                    const $retryItem = $($('#item-template').prop('content')).clone().find('.todo-item');
+                    setupItemEvents($retryItem, $currentTodoList);
+                    $currentTodoList.append($retryItem);
+                    $retryItem.find('.item-input').focus();
+                }
                 return;
             }
 
             $listInput.prop('disabled', true);
-            $newListBox.find('.add-item-row, .delete-item-btn').hide();
+            $currentListBox.find('.add-item-row, .delete-item-btn').hide();
             $(this).text('edit');
-            updateListStats($newListBox);
+            updateListStats($currentListBox);
         } else {
-            // 수정 모드
-            $todoList.find('.item-input').prop('disabled', false).css('background', '');
+            $items.find('.item-input').prop('disabled', false).css('background', '');
             $listInput.prop('disabled', false);
-            $newListBox.find('.add-item-row, .delete-item-btn').show();
+            $currentListBox.find('.add-item-row, .delete-item-btn').show();
             $(this).text('done');
         }
     });
@@ -318,26 +367,29 @@ function initEverydaySection() {
     const $doneBtn = $everydaySection.find('.done-btn');
     const $addRow = $everydaySection.find('.add-item-row');
 
-    $addRow.on('click', () => addNewItem($todoList));
+    $addRow.on('click', function() {
+        addNewItem($todoList);
+    });
 
     $doneBtn.on('click', function() {
+        const $currentBox = $(this).closest('.list-box');
+        const $items = $currentBox.find('.todo-item');
         const isDone = $(this).text().toLowerCase() === 'done';
-        const $items = $todoList.find('.todo-item');
 
         if (isDone) {
             $items.each(function() {
                 const $input = $(this).find('.item-input');
-                if ($.trim($input.val()) === "") $(this).remove(); // 규칙 3 적용
+                if ($.trim($input.val()) === "") $(this).remove();
                 else $input.prop('disabled', true).css({'background': 'transparent', 'border': 'none'});
             });
             $addRow.hide();
-            $everydaySection.find('.delete-item-btn').hide();
+            $currentBox.find('.delete-item-btn').hide();
             $(this).text('edit');
-            updateListStats($everydaySection.find('.list-box')); // toggleTodo 오타 수정
+            updateListStats($currentBox);
         } else {
             $items.find('.item-input').prop('disabled', false).css({'background': '', 'border': ''});
             $addRow.show();
-            $everydaySection.find('.delete-item-btn').show();
+            $currentBox.find('.delete-item-btn').show();
             $(this).text('done');
         }
     });
@@ -354,13 +406,13 @@ $('#main-edit-all').on('click', function() {
     const $container = $('#list-container');
 
     if (isMainEditMode) {
-        $(this).text('save').css('background-color', 'var(--accent-green)');
+        $(this).text('save').css('background-color', 'var(--accent-green)').css('color', 'var(--white-txt)');
         $container.addClass('edit-mode');
         $('.delete-list-btn').show();
         $('.add-main-btn').hide();
         enableDragAndDrop(); 
     } else {
-        $(this).text('edit').css('background-color', '');
+        $(this).text('main edit').css('background-color', '').css('color', '');
         $container.removeClass('edit-mode');
         $('.delete-list-btn').hide();
         $('.add-main-btn').show();

@@ -2,10 +2,20 @@
     --bg-color: #f8f7f4;
     --card-bg: #e0e0e0;
     --text-main: #333;
-    --text-muted: #888;
+    --text-muted: #5f5f5f;
     --accent-green: #009933;
     --accent-red: #ff4d4d;
     --border-color: #ccc;
+    --aside-bg: #d9d9d9;
+    --title-bg: #4c4c4c;
+    --memo-bg: #F8EBAF;
+    --white-txt: #efefef;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -15,21 +25,48 @@ body {
     color: var(--text-main);
 }
 
-.app-container {
-    display: flex;
-    max-width: 1200px;
-    margin: 0 auto;
+input {
+    border: none;
+}
+button {
+    border: none;
+    background-color: transparent;
+}
+
+#container {
+    width: 100%;
     min-height: 100vh;
+    display: grid;
+    grid-template-columns: 350px auto 200px;
+    grid-template-rows: auto;
+    grid-template-areas:
+        "aside main memo";
 }
 
 /* Aside & Timer */
 .sidebar {
     width: 350px;
-    padding: 40px;
-    background-color: var(--card-bg);
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 10px;
+    grid-area: aside;
+    position: sticky;
+    top: 0;
+}
+
+.timer-section, .everyday-section {
+    width: 100%;
+    background-color: var(--aside-bg);
+    padding: 20px 10px;
+    border-radius: 20px;
+}
+
+.timer-section {
+    height: 300px;
+}
+.everyday-section {
+    height: calc(100vh - 430px);
 }
 
 .timer-display {
@@ -48,7 +85,7 @@ body {
 }
 
 .timer-svg {
-    transform: rotate(-90deg); /* 12시 방향부터 시작하도록 */
+    transform: rotate(-90deg);
     width: 100%;
     height: 100%;
 }
@@ -56,29 +93,29 @@ body {
 .timer-bg {
     fill: none;
     stroke: #eee;
-    stroke-width: 5;
+    stroke-width: 10;
 }
 
 .timer-progress {
     fill: none;
-    stroke: var(--accent-green); /* 기획한 초록색 */
-    stroke-width: 5;
+    stroke: var(--accent-green);
+    stroke-width: 10;
     stroke-linecap: butt;
-    transition: stroke-dashoffset 1s linear; /* 1초마다 부드럽게 깎임 */
+    transition: stroke-dashoffset 1s linear;
 }
 
-.timer-input {
+/* .timer-input {
     width: 120px;
-    background: transparent;
+    background-color: transparent;
     border: none;
-    border-bottom: 2px solid var(--accent-ggreen);
+    border-bottom: 2px solid var(--accent-green);
     color: var(--text-main);
     font-family: inherit;
-    font-size: inherit; /* 부모인 .time-text 크기 그대로 */
+    font-size: inherit;
     font-weight: inherit;
     text-align: center;
     outline: none;
-}
+} */
 
 .timer-edit-container {
     display: flex;
@@ -89,7 +126,7 @@ body {
 
 .timer-split-input {
     width: 1.5em; /* 글자 크기에 맞게 가변 */
-    background: #ffffff; /* 입력 중임을 알 수 있게 살짝 밝게 */
+    background-color: #ffffff; /* 입력 중임을 알 수 있게 살짝 밝게 */
     border: none;
     border-bottom: 2px solid var(--accent-green);
     color: var(--text-main);
@@ -99,6 +136,26 @@ body {
     text-align: center;
     outline: none;
     border-radius: 4px;
+}
+
+
+.timer-controls {
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    margin: 20px auto 0;
+}
+.timer-btn {
+    border-radius: 20px;
+    padding: 5px 10px;
+    color: var(--white-txt);
+    box-shadow: 2px 2px 2px #999;
+}
+#start-stop {
+    background-color: var(--accent-green);
+}
+#reset {
+    background-color: #b4b4b4;
 }
 
 /* 모바일 전용 대형 타이머 대응 */
@@ -111,18 +168,21 @@ body {
     width: 200px;
 }
 
+
+
+
 /* Main Content */
 .main-content {
-    flex: 1;
-    padding: 60px;
-    position: relative;
+    grid-area: main;
+    padding: 10px;
 }
 
 .main-header {
-    margin-bottom: 50px;
+    padding: 50px;
 }
 
 .header-top {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -130,25 +190,53 @@ body {
 
 .quote {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 1rem;
+    margin-top: 20px;
+}
+.author {
+    font-size: 0.8rem;
     margin-top: 10px;
+    color: var(--text-muted);
+}
+
+.list-content {
+    margin-top: 10px;
+    padding-top: 100px;
+    height: auto;
 }
 
 /* Todo Items */
-.list-box {
-    margin-bottom: 40px;
-    transition: opacity 0.3s ease;
+#list-container {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
 }
 
-.list-box.completed {
-    opacity: 0.5;
-    order: 100; /* 맨 아래로 보냄 (flex 기준) */
+.list-box {
+    margin-bottom: 50px;
+    padding: 20px;
+}
+
+.list-box-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.list-box-title {
+    width: 150px;
+    text-align: center;
+    padding: 5px 10px;
+    font-size: 1.2rem;
+    background-color: var(--title-bg);
+    border-radius: 20px;
+    color: var(--white-txt);
 }
 
 .todo-item {
     display: flex;
+    gap: 20px;
     align-items: center;
-    padding: 10px 0;
+    padding: 20px 10px 10px;
     border-bottom: 1px solid var(--border-color);
     transition: all 0.3s;
 }
@@ -161,18 +249,83 @@ body {
     text-decoration: line-through;
 }
 
+.item-input {
+    padding: 10px;
+    font-size: 1rem;
+}
+
+
+/* memo */
+.memo-box {
+    padding: 10px;
+    grid-area: memo;
+
+    position: sticky;
+    top: 50px;
+    height: fit-content;
+}
+
+.memo-box h3 {
+    padding-bottom: 10px;
+    color: var(--text-muted);
+}
+
+.memo {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    
+    width: 100%;
+    height: 200px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: var(--memo-bg);
+    
+    font-family: 'Pretendard', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #333;
+    
+    resize: vertical; /* 사용자가 아래로만 늘릴 수 있게 설정 */
+    outline: none;    /* 클릭 시 생기는 파란 테두리 제거 */
+    transition: border-color 0.2s;
+}
+
+/* .memo:focus {
+    border-color: #a0a0a0;
+    background-color: #fff;
+}
+
+.memo::placeholder {
+    color: #ccc;
+} */
+
+
+
 /* Buttons */
-.edit-btn {
-    background: none;
+
+#mobile-timer-btn {
+    display: none;
+}
+
+.done-btn {
+    color: var(--text-muted);
+}
+
+.header-btn {
+    background-color: none;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    text-decoration: underline;
+    font-size: 1rem;
+    background-color: var(--aside-bg);
+    border-radius: 20px;
+    padding: 5px 10px;
 }
 
 .add-main-btn {
     font-size: 3rem;
-    background: none;
+    background-color: none;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
@@ -181,9 +334,14 @@ body {
 }
 
 
+.add-item-row {
+    padding: 10px;
+}
 
-
-
+/* everyday section */
+.everyday-section .todo-list {
+    padding-top: 20px;
+}
 
 
 
@@ -209,7 +367,7 @@ body {
     position: absolute;
     right: -10px;
     top: -10px;
-    background: #ff4d4d;
+    background-color: #ff4d4d;
     color: white;
     border: none;
     border-radius: 50%;
@@ -243,7 +401,7 @@ body {
 .overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--card-bg);
+    background-color: var(--card-bg);
     display: none; /* JS로 제어 */
     z-index: 1000;
 }

@@ -10,9 +10,9 @@
 </head>
 <body>
 
-    <div class="app-container">
+    <div id="container">
         <aside class="sidebar">
-            <div class="timer-section">
+            <section class="timer-section">
                 <div class="timer-display">
                     <svg class="timer-svg" viewBox="0 0 100 100">
                         <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
@@ -21,22 +21,24 @@
                     <div class="time-text"></div>
                 </div>
                 <div class="timer-controls">
-                    <button id="start-stop" class="btn-primary">START</button>
-                    <button id="reset" class="btn-secondary">RESET</button>
+                    <button id="start-stop" class="timer-btn">START</button>
+                    <button id="reset" class="timer-btn">RESET</button>
                 </div>
-            </div>
+            </section>
 
-            <div class="everyday-section" draggable="false">
+            <section class="everyday-section" draggable="false">
                 <div id="everyday-listbox" class="list-box">
                     <div class="list-box-header">
-                        <span class="everyday-title">Every Day</span>
-                        <span class="count">0/0</span>
+                        <div class="box-header-inner">
+                            <span class="list-box-title">Every Day</span>
+                            <span class="count">0/0</span>
+                        </div>
                         <button class="done-btn">done</button>
                     </div>
                     <div class="todo-list"></div>
                     <div class="add-item-row" style="cursor:pointer;">+ 리스트 추가하기</div>
                 </div>
-            </div>
+            </section>
         </aside>
 
         <main class="main-content">
@@ -44,19 +46,26 @@
                 <div class="header-top">
                     <h1 id="current-date"></h1>
                     <button id="mobile-timer-btn" class="timer-icon-btn"></button>
-                    <button id="main-edit-all" class="edit-btn">edit</button>
+                    <button id="main-edit-all" class="header-btn">main edit</button>
                 </div>
-                <p class="quote">"질문은 용기이자 세상을 변화시키는 힘이다."</p>
+                <p id="daily-quote" class="quote"></p>
+                <p id="quote-author" class="author"></p>
             </header>
 
-            <section id="list-container">
-                </section>
+            <section class="list-content">
+                <article id="list-container"></article>
+                <button id="add-list-box-btn" class="add-main-btn">+</button>
+            </section>
 
-            <button id="add-list-box-btn" class="add-main-btn">+</button>
         </main>
+
+        <div class="memo-box">
+            <h3>MEMO</h3>
+            <textarea class="memo"></textarea>
+        </div>
     </div>
 
-    <div id="timer-overlay" class="overlay">
+    <!-- <div id="timer-overlay" class="overlay">
         <button class="close-overlay">&lsaquo;</button>
         <div class="overlay-content">
             <h2>TIMER</h2>
@@ -72,14 +81,16 @@
                 <button class="btn-secondary">RESET</button>
             </div>
         </div>
-    </div>
+    </div> -->
 
 <template id="list-template">
     <div class="list-box">
         <div class="list-box-header">
             <button class="delete-list-btn" style="display:none;">×</button>
-            <input type="text" placeholder="카테고리명" class="list-input">
-            <span class="count">0/0</span>
+            <div class="box-header-inner">
+                <input type="text" placeholder="리스트 제목" class="list-input list-box-title">
+                <span class="count">0/0</span>
+            </div>
             <button class="done-btn">done</button>
         </div>
         <div class="todo-list"></div>
